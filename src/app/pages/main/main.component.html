@@ -1,0 +1,63 @@
+<div class="menu">
+  <button *ngIf="isSuper" tuiButton size="s" (click)="openJsonUpdateForm()">
+    Добавить | обнoвить (json)
+  </button>
+
+  <tui-hosted-dropdown
+    tuiDropdownAlign="left"
+    [content]="dropdownFrontend"
+    [(open)]="openFr"
+  >
+    <button tuiButton size="s" type="button" [iconRight]="icon">
+      Frontend translates
+    </button>
+  </tui-hosted-dropdown>
+
+  <tui-hosted-dropdown
+    tuiDropdownAlign="left"
+    [content]="dropdownGames"
+    [(open)]="openG"
+  >
+    <button tuiButton size="s" type="button" [iconRight]="icon">
+      Games translates
+    </button>
+  </tui-hosted-dropdown>
+</div>
+
+<app-translate-keys
+  [lang]="lang"
+  [project]="project"
+  [update]="$update"
+></app-translate-keys>
+
+<ng-template #icon>
+  <tui-svg
+    src="tuiIconChevronDown"
+    class="icon"
+    [class.icon_rotated]="openG"
+  ></tui-svg>
+</ng-template>
+
+<ng-template #dropdownFrontend>
+  <tui-data-list>
+    <button
+      *ngFor="let lang of langs"
+      tuiOption
+      (click)="onClick('frontend', lang.lang)"
+    >
+      {{ lang.title }}
+    </button>
+  </tui-data-list>
+</ng-template>
+
+<ng-template #dropdownGames>
+  <tui-data-list>
+    <button
+      *ngFor="let lang of langs"
+      tuiOption
+      (click)="onClick('games', lang.lang)"
+    >
+      {{ lang.title }}
+    </button>
+  </tui-data-list>
+</ng-template>

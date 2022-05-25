@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--tui-base-04);
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  .info {
+    margin-right: 1rem;
+  }
+}

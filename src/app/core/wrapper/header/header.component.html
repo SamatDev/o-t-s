@@ -1,0 +1,10 @@
+<h2>Translates</h2>
+<div class="row" *ngIf="user | async as user">
+  <div class="info tui-text_body-m">
+    Your role: <b>{{ user.role }}</b>
+  </div>
+
+  <button tuiButton size="s" appearance="accent" (click)="logout()">
+    logout
+  </button>
+</div>

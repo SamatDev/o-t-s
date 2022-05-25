@@ -1,0 +1,12 @@
+.line {
+  margin-bottom: 0.5rem;
+  span {
+    &:last-child {
+      font-weight: bold;
+    }
+  }
+}
+
+tui-input {
+  margin-bottom: 0.5rem;
+}

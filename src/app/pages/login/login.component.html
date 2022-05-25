@@ -1,0 +1,30 @@
+<form class="b-form" [formGroup]="form" (ngSubmit)="onClick($event)">
+  <p *ngIf="isError" class="tui-text_body-xl error-message">
+    Username or password incorrect!
+  </p>
+
+  <p>
+    <tui-input formControlName="login">
+      Login
+      <input tuiTextfield type="text" />
+    </tui-input>
+  </p>
+
+  <p>
+    <tui-input-password formControlName="password">
+      Password
+      <input tuiTextfield placeholder="Make it secure!" />
+    </tui-input-password>
+  </p>
+
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      [showLoader]="isLoading"
+      [disabled]="isLoading || form.invalid"
+    >
+      Login
+    </button>
+  </p>
+</form>

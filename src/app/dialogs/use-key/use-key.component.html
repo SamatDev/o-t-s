@@ -1,0 +1,77 @@
+<div class="card">
+  <div class="line">
+    <span>Язык: </span>
+    <span>{{ (data | async)?.lang }}</span>
+  </div>
+
+  <div class="line">
+    <span>Проект: </span>
+    <span>{{ (data | async)?.project }}</span>
+  </div>
+
+  <ng-container *ngIf="form">
+    <ng-container [ngSwitch]="mode">
+      <ng-container
+        *ngSwitchCase="'changeRu'"
+        [ngTemplateOutlet]="changeRu"
+      ></ng-container>
+      <ng-container
+        *ngSwitchCase="'changeAny'"
+        [ngTemplateOutlet]="changeAny"
+      ></ng-container>
+      <ng-container
+        *ngSwitchCase="'addRu'"
+        [ngTemplateOutlet]="addRu"
+      ></ng-container>
+    </ng-container>
+  </ng-container>
+
+  <button tuiButton size="s" (click)="save()">Сохранить</button>
+</div>
+
+<ng-template #changeRu>
+  <div class="line">
+    <span>Ключ: </span>
+    <span>{{ (data | async)?.key }}</span>
+  </div>
+
+  <form [formGroup]="form">
+    <tui-input formControlName="value">
+      Значение на русском:
+      <input size="s" tuiTextfield type="text" />
+    </tui-input>
+  </form>
+</ng-template>
+
+<ng-template #changeAny>
+  <div class="line">
+    <span>Ключ: </span>
+    <span>{{ (data | async)?.key }}</span>
+  </div>
+
+  <div class="line">
+    <span>Значение на русском: </span>
+    <span>{{ (data | async)?.value }}</span>
+  </div>
+
+  <form [formGroup]="form">
+    <tui-input formControlName="value">
+      Значение на {{ data.getValue()?.lang }}:
+      <input size="s" tuiTextfield type="text" />
+    </tui-input>
+  </form>
+</ng-template>
+
+<ng-template #addRu>
+  <form [formGroup]="form">
+    <tui-input formControlName="key">
+      Ключ:
+      <input size="s" tuiTextfield type="text" />
+    </tui-input>
+
+    <tui-input formControlName="value">
+      Значение на русском:
+      <input size="s" tuiTextfield type="text" />
+    </tui-input>
+  </form>
+</ng-template>

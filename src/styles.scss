@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  // Primary
+  --tui-primary-text: #fff;
+  --tui-primary: #188f89;
+  --tui-primary-hover: #3aa981;
+  --tui-primary-active: #2c7a35;
+
+  // Link
+  --tui-link: #f59726;
+  --tui-link-hover: #fab00b;
+
+  // Selection
+  --tui-selection: #f3fadc;
+}
