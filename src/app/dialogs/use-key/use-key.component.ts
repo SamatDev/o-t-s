@@ -68,12 +68,13 @@ export class UseKeyComponent implements AfterViewInit {
         if (this.form.invalid) return;
         const { lang, project, mode, key } = this.context.data;
         const data = {
-          key,
           mode: this.mode,
           lang,
           project,
           ...this.form.value,
+          oldKey: key,
         };
+        console.log(data);
         this.context.completeWith(data);
         break;
       }
@@ -113,6 +114,7 @@ export class UseKeyComponent implements AfterViewInit {
 
       case 'changeRu': {
         return new FormGroup({
+          key: new FormControl(this.context.data.key),
           value: new FormControl(this.context.data.value, Validators.required),
         });
       }

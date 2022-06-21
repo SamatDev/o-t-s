@@ -30,12 +30,12 @@
 </div>
 
 <ng-template #changeRu>
-  <div class="line">
-    <span>Ключ: </span>
-    <span>{{ (data | async)?.key }}</span>
-  </div>
-
   <form [formGroup]="form">
+    <tui-input formControlName="key">
+      Ключ:
+      <input size="s" tuiTextfield type="text" />
+    </tui-input>
+
     <tui-input formControlName="value">
       Значение на русском:
       <input size="s" tuiTextfield type="text" />

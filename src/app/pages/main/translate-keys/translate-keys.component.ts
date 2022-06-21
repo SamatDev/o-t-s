@@ -128,7 +128,7 @@ export class TranslateKeysComponent
         },
       })
       .subscribe((result: any) => {
-        const { mode, key, value, lang, project } = result;
+        const { mode, key, value, lang, project, oldKey } = result;
         this.isLoading = true;
         this.cdr.detectChanges();
         this.updateTranslate({
@@ -137,6 +137,7 @@ export class TranslateKeysComponent
           lang,
           project,
           value,
+          oldKey,
         });
       });
   }
@@ -175,6 +176,7 @@ export class TranslateKeysComponent
     lang: string;
     project: TranslateTypes;
     value: string;
+    oldKey?: string;
   }) {
     const { lang, project, mode, value } = data;
     switch (mode) {
@@ -205,9 +207,10 @@ export class TranslateKeysComponent
       case 'changeRu': {
         if (!this.frontendRu || !this.gamesRu) return;
         this.isLoading = true;
-        const translates = Object.assign(
+        const translates: Record<string, string> = Object.assign(
           project === 'frontend' ? this.frontendRu : this.gamesRu
         );
+        if (data.oldKey) delete translates[data.oldKey];
         translates[data.key] = value;
         this.translateServerService
           .updateTranslate({
