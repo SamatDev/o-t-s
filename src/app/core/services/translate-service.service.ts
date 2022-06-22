@@ -42,21 +42,23 @@ export class TranslateServerService {
   }
 
   addLangLocale(data: Partial<PortalsLangs>) {
-    this.addLang({
-      lang: data.lang!,
-      translates: {},
-      type: 'frontend',
-    })
-      .pipe(first())
-      .subscribe();
+    // if (!this.langs.find((el) => el.lang === data.lang)) {
+    //   this.addLang({
+    //     lang: data.lang!,
+    //     translates: {},
+    //     type: 'frontend',
+    //   })
+    //     .pipe(first())
+    //     .subscribe();
 
-    this.addLang({
-      lang: data.lang!,
-      translates: {},
-      type: 'games',
-    })
-      .pipe(first())
-      .subscribe();
+    //   this.addLang({
+    //     lang: data.lang!,
+    //     translates: {},
+    //     type: 'games',
+    //   })
+    //     .pipe(first())
+    //     .subscribe();
+    // }
 
     return this.api.post('/langs', data);
   }
