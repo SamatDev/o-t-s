@@ -28,6 +28,10 @@ export class AddFromJsonComponent implements OnInit {
     json: new FormControl('', Validators.required),
   });
 
+  get langs() {
+    return this.service.langs;
+  }
+
   isLoading: boolean = false;
 
   ngOnInit(): void {}

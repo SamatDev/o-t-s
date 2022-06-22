@@ -7,14 +7,20 @@ import {
   ViewChild,
 } from '@angular/core';
 import { TuiDialog } from '@taiga-ui/cdk';
-import { TuiDialogService, TuiHostedDropdownComponent } from '@taiga-ui/core';
+import {
+  TuiAlertService,
+  TuiDialogService,
+  TuiHostedDropdownComponent,
+} from '@taiga-ui/core';
 import { TranslateServerService } from 'src/app/core/services/translate-service.service';
 import { AddFromJsonComponent } from 'src/app/dialogs/add-from-json/add-from-json.component';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
-import { TranslateTypes } from 'src/app/core/interfaces/types';
-import { Subject } from 'rxjs';
+import { PortalsLangs, TranslateTypes } from 'src/app/core/interfaces/types';
+import { Observable, Subject } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { AddLangLocaleComponent } from 'src/app/dialogs/add-lang-locale/add-lang-locale.component';
+import { LocaleEditorComponent } from 'src/app/dialogs/locale-editor/locale-editor.component';
 
 @Component({
   selector: 'app-main',
@@ -28,26 +34,15 @@ export class MainComponent implements OnInit {
     @Inject(TuiDialogService) private readonly dialogService: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
     private authService: AuthService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    @Inject(TuiAlertService)
+    private readonly alertService: TuiAlertService
   ) {}
-  readonly langs: { lang: string; title: string }[] = [
-    {
-      lang: 'ru',
-      title: 'Русский',
-    },
-    {
-      lang: 'ua',
-      title: 'Украинский',
-    },
-    {
-      lang: 'uz',
-      title: 'Узбекский',
-    },
-    {
-      lang: 'en',
-      title: 'Английский',
-    },
-  ];
+
+  get langs(): PortalsLangs[] {
+    return this.translateServerService.langs;
+  }
+
   readonly projects: { type: TranslateTypes; title: string }[] = [
     {
       type: 'frontend',
@@ -70,13 +65,7 @@ export class MainComponent implements OnInit {
   $update: Subject<void> = new Subject();
 
   ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe((params) => {
-      const project = params['project'];
-      const lang = params['lang'];
-      if (this.projects.map((el) => el.type).includes(project))
-        this.project = project;
-      if (this.langs.map((el) => el.lang).includes(lang)) this.lang = lang;
-    });
+    this.translateServerService.uploadLangs();
   }
 
   onClick(type: TranslateTypes, lang: string): void {
@@ -103,6 +92,30 @@ export class MainComponent implements OnInit {
           this.$update.next();
         }
       });
+  }
+
+  openAddLocale() {
+    this.dialogService
+      .open(new PolymorpheusComponent(AddLangLocaleComponent, this.injector))
+      .subscribe((result: any) => {
+        this.addLangLocale(result);
+      });
+  }
+
+  openLocaleEditor() {
+    this.dialogService
+      .open(new PolymorpheusComponent(LocaleEditorComponent, this.injector))
+      .subscribe();
+  }
+
+  private addLangLocale(data: Partial<PortalsLangs>) {
+    this.translateServerService.addLangLocale(data).subscribe({
+      next: () => {
+        this.alertService.open('lang added').subscribe();
+        this.translateServerService.uploadLangs();
+      },
+      error: (err) => this.alertService.open('Error'),
+    });
   }
 
   openFr = false;

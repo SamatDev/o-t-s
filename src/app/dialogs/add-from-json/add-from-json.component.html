@@ -15,12 +15,8 @@
   <tui-select formControlName="lang" class="tui-space_bottom-4">
     Lang
     <tui-data-list *tuiDataList>
-      <button
-        *ngFor="let item of context?.data?.langs"
-        tuiOption
-        [value]="item.lang"
-      >
-        {{ item.title }}
+      <button *ngFor="let item of langs" tuiOption [value]="item.lang">
+        {{ item.label }}
       </button>
     </tui-data-list>
   </tui-select>

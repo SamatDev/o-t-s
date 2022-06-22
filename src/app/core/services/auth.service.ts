@@ -30,7 +30,7 @@ export class AuthService {
 
   login(username: string, password: string): Observable<User> {
     return this.http
-      .post<User>(`${environment.api}/auth`, {
+      .post<User>(`${environment.api}/translates/auth`, {
         username,
         password,
       })

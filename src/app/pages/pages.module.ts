@@ -11,6 +11,8 @@ import { TranslateKeysComponent } from './main/translate-keys/translate-keys.com
 import { UseKeyComponent } from '../dialogs/use-key/use-key.component';
 import { AuthGuard } from '../core/guards/auth.guard';
 import { FilterByTranslateDataPipe } from '../core/pipes/filter-by-translate-data.pipe';
+import { AddLangLocaleComponent } from '../dialogs/add-lang-locale/add-lang-locale.component';
+import { LocaleEditorComponent } from '../dialogs/locale-editor/locale-editor.component';
 
 const routes: Routes = [
   {
@@ -32,6 +34,8 @@ const routes: Routes = [
     TranslateKeysComponent,
     UseKeyComponent,
     FilterByTranslateDataPipe,
+    AddLangLocaleComponent,
+    LocaleEditorComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
   providers: [ApiService, TranslateServerService],

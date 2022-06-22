@@ -1,0 +1,29 @@
+<form [formGroup]="form">
+  <tui-input formControlName="lang">
+    Локаль:
+    <input size="s" tuiTextfield type="text" />
+  </tui-input>
+
+  <tui-input formControlName="portal">
+    Портал:
+    <input size="s" tuiTextfield type="text" />
+  </tui-input>
+
+  <tui-input formControlName="label">
+    Название:
+    <input size="s" tuiTextfield type="text" />
+  </tui-input>
+
+  <p>
+    Активен:
+    <tui-toggle
+      formControlName="active"
+      size="l"
+      class="tui-space_left-1"
+      [showIcons]="true"
+    >
+    </tui-toggle>
+  </p>
+
+  <button tuiButton size="s" (click)="add($event)">Добавить</button>
+</form>

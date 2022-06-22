@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  api: 'https://support.mindskills.global/chat-api/translates',
+  api: 'https://support.mindskills.global/chat-api',
 };

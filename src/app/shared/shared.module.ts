@@ -17,6 +17,7 @@ import {
   TuiLoaderModule,
   TuiScrollbarModule,
   TuiSvgModule,
+  TuiTooltipModule,
 } from '@taiga-ui/core';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 
@@ -38,6 +39,7 @@ const modules = [
   TuiLoaderModule,
   TuiActionModule,
   TuiToggleModule,
+  TuiTooltipModule,
 ];
 
 @NgModule({

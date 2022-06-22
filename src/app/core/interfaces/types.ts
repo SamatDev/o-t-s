@@ -5,3 +5,11 @@ export interface ITranslateDto {
   translates: object;
   type: TranslateTypes;
 }
+
+export interface PortalsLangs {
+  id: number;
+  lang: string;
+  portal: string;
+  active: boolean;
+  label: string;
+}

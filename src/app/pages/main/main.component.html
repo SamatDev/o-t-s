@@ -1,8 +1,4 @@
 <div class="menu">
-  <button *ngIf="isSuper" tuiButton size="s" (click)="openJsonUpdateForm()">
-    Добавить | обнoвить (json)
-  </button>
-
   <tui-hosted-dropdown
     tuiDropdownAlign="left"
     [content]="dropdownFrontend"
@@ -22,6 +18,19 @@
       Games translates
     </button>
   </tui-hosted-dropdown>
+  <ng-container *ngIf="isSuper">
+    <button tuiButton size="s" (click)="openJsonUpdateForm()">
+      Добавить | обнoвить (json)
+    </button>
+
+    <button tuiButton appearance="accent" size="s" (click)="openAddLocale()">
+      Добавить язык
+    </button>
+
+    <button tuiButton appearance="accent" size="s" (click)="openLocaleEditor()">
+      Редактор языков
+    </button>
+  </ng-container>
 </div>
 
 <app-translate-keys
@@ -45,7 +54,7 @@
       tuiOption
       (click)="onClick('frontend', lang.lang)"
     >
-      {{ lang.title }}
+      {{ lang.label }} {{ lang.active ? "" : " - неактивен" }}
     </button>
   </tui-data-list>
 </ng-template>
@@ -56,8 +65,9 @@
       *ngFor="let lang of langs"
       tuiOption
       (click)="onClick('games', lang.lang)"
+      [ngClass]="{ bold: lang.active }"
     >
-      {{ lang.title }}
+      {{ lang.label }} {{ lang.active ? "" : " - неактивен" }}
     </button>
   </tui-data-list>
 </ng-template>
