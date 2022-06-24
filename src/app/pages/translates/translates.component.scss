@@ -1,0 +1,45 @@
+.wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.icon {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 1000;
+  &.refresh {
+    top: 0;
+    right: 0;
+  }
+
+  &.add {
+    top: 60px;
+    right: 0;
+  }
+}
+
+.box {
+  width: 95%;
+  height: 88vh;
+  padding: 1rem;
+}
+
+table {
+  width: 100%;
+  tr {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid var(--tui-base-03);
+    td {
+      flex: 1;
+    }
+  }
+  tr:not(:first-child) {
+    cursor: pointer;
+    transition: 0.1s ease;
+    &:hover {
+      background-color: var(--tui-success-fill);
+    }
+  }
+}

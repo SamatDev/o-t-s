@@ -13,3 +13,20 @@
   // Selection
   --tui-selection: #f3fadc;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+.tools-row {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: row;
+  align-items: center;
+  button {
+    margin-right: 0.5rem;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

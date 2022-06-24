@@ -6,7 +6,7 @@
 
   <div class="line">
     <span>Проект: </span>
-    <span>{{ (data | async)?.project }}</span>
+    <span>{{ (data | async)?.portal }}</span>
   </div>
 
   <ng-container *ngIf="form">
@@ -18,10 +18,6 @@
       <ng-container
         *ngSwitchCase="'changeAny'"
         [ngTemplateOutlet]="changeAny"
-      ></ng-container>
-      <ng-container
-        *ngSwitchCase="'addRu'"
-        [ngTemplateOutlet]="addRu"
       ></ng-container>
     </ng-container>
   </ng-container>
@@ -55,7 +51,7 @@
   </div>
 
   <form [formGroup]="form">
-    <tui-input formControlName="value">
+    <tui-input formControlName="changeValue">
       Значение на {{ data.getValue()?.lang }}:
       <input size="s" tuiTextfield type="text" />
     </tui-input>

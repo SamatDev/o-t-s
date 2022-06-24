@@ -5,14 +5,16 @@ import { LoginComponent } from './login/login.component';
 import { SharedModule } from '../shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../core/services/api.service';
-import { TranslateServerService } from '../core/services/translate-service.service';
 import { AddFromJsonComponent } from '../dialogs/add-from-json/add-from-json.component';
 import { TranslateKeysComponent } from './main/translate-keys/translate-keys.component';
 import { UseKeyComponent } from '../dialogs/use-key/use-key.component';
 import { AuthGuard } from '../core/guards/auth.guard';
 import { FilterByTranslateDataPipe } from '../core/pipes/filter-by-translate-data.pipe';
 import { AddLangLocaleComponent } from '../dialogs/add-lang-locale/add-lang-locale.component';
-import { LocaleEditorComponent } from '../dialogs/locale-editor/locale-editor.component';
+import { PortalsComponent } from './portals/portals.component';
+import { TranslatesComponent } from './translates/translates.component';
+import { DialogDeleteComponent } from '../dialogs/delete-dialog/delete-dialog.component';
+import { EditLangDialogComponent } from '../dialogs/edit-lang-dialog/edit-lang-dialog.component';
 
 const routes: Routes = [
   {
@@ -23,6 +25,22 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'portals',
+    component: PortalsComponent,
+    redirectTo: '',
+    data: {
+      title: 'Проекты',
+    },
+  },
+  {
+    path: 'portals/:path',
+    component: PortalsComponent,
+  },
+  {
+    path: 'portals/:path/:locale',
+    component: TranslatesComponent,
   },
 ];
 
@@ -35,9 +53,12 @@ const routes: Routes = [
     UseKeyComponent,
     FilterByTranslateDataPipe,
     AddLangLocaleComponent,
-    LocaleEditorComponent,
+    PortalsComponent,
+    TranslatesComponent,
+    DialogDeleteComponent,
+    EditLangDialogComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
-  providers: [ApiService, TranslateServerService],
+  providers: [ApiService],
 })
 export class PagesModule {}

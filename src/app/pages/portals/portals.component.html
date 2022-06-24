@@ -1,0 +1,54 @@
+<div class="tools-row">
+  <button tuiButton size="s" (click)="location.back()">Назад</button>
+
+  <button tuiButton size="s" appearance="accent" (click)="openAddLangDialog()">
+    Добавить язык
+  </button>
+</div>
+
+<table *ngIf="langs | async as data" tuiTable class="table" [columns]="columns">
+  <thead>
+    <tr tuiThGroup>
+      <th tuiTh>Название</th>
+      <th tuiTh>Locale</th>
+      <th tuiTh>Активен</th>
+      <th tuiTh>Действия</th>
+    </tr>
+  </thead>
+  <tbody tuiTbody [data]="data">
+    <tr *tuiRow="let item of data" tuiTr [ngClass]="{ active: item.active }">
+      <td *tuiCell="'label'" tuiTd>
+        <a tuiLink [routerLink]="[item.locale]">
+          {{ item.label }}
+        </a>
+      </td>
+
+      <td *tuiCell="'locale'" tuiTd>
+        {{ item.locale }}
+      </td>
+
+      <td *tuiCell="'active'" tuiTd>
+        {{ item.active ? "Да" : "Нет" }}
+      </td>
+
+      <td *tuiCell="'actions'" tuiTd class="actions">
+        <button
+          tuiIconButton
+          size="s"
+          [icon]="'tuiIconEdit'"
+          (click)="editLang(item)"
+        ></button>
+
+        <button
+          tuiIconButton
+          size="s"
+          appearance="accent"
+          class="red"
+          [icon]="'tuiIconClose'"
+          [disabled]="item.locale === 'ru' || !isSuper"
+          (click)="deleteLang(item.id!)"
+        ></button>
+      </td>
+    </tr>
+  </tbody>
+</table>

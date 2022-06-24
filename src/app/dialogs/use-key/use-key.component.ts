@@ -3,21 +3,19 @@ import {
   ChangeDetectorRef,
   Component,
   Inject,
-  OnInit,
 } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TuiDialogContext } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { TranslateTypes } from 'src/app/core/interfaces/types';
+import { BehaviorSubject } from 'rxjs';
 
 type DataType = {
   key: string;
   value: string;
-  project: TranslateTypes;
   lang: string;
-  mode: 'changeAny' | 'changeRu' | 'addRu';
-  changeValue: string | null;
+  path: string;
+  portal: string;
+  changeValue: string;
 };
 
 @Component({
@@ -34,90 +32,40 @@ export class UseKeyComponent implements AfterViewInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  get mode() {
-    return this.context.data.mode;
-  }
-
   form!: FormGroup;
+  mode: 'changeRu' | 'changeAny' = 'changeAny';
+  get isChangeAny() {
+    return this.form.get('changeValue') === null;
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.data.next(this.context.data);
-      this.form = this.initForm(this.context.data.mode);
+      this.form = this.initForm();
+
+      console.log(this.context.data);
+      if (this.context.data.changeValue !== null) {
+        this.form.addControl(
+          'changeValue',
+          new FormControl('', Validators.required)
+        );
+        this.mode = 'changeAny';
+      } else this.mode = 'changeRu';
+      console.log(this.form);
       this.cdr.markForCheck();
     });
   }
 
   save() {
-    switch (this.mode) {
-      case 'changeAny': {
-        if (this.form.invalid) return;
-        const { lang, project, mode, key } = this.context.data;
-        const data = {
-          key,
-          mode: this.mode,
-          lang,
-          project,
-          ...this.form.value,
-        };
-        this.context.completeWith(data);
-        break;
-      }
-
-      case 'changeRu': {
-        if (this.form.invalid) return;
-        const { lang, project, mode, key } = this.context.data;
-        const data = {
-          mode: this.mode,
-          lang,
-          project,
-          ...this.form.value,
-          oldKey: key,
-        };
-        console.log(data);
-        this.context.completeWith(data);
-        break;
-      }
-
-      case 'addRu': {
-        if (this.form.invalid) return;
-        const { lang, project, mode, key } = this.context.data;
-        const data = {
-          project,
-          lang,
-          mode: this.mode,
-          ...this.form.value,
-        };
-        this.context.completeWith(data);
-        break;
-      }
-    }
+    this.context.completeWith({
+      ...this.form.value,
+    });
   }
 
-  initForm(mode: 'changeAny' | 'changeRu' | 'addRu') {
-    switch (mode) {
-      case 'addRu': {
-        return new FormGroup({
-          key: new FormControl('', Validators.required),
-          value: new FormControl('', Validators.required),
-        });
-      }
-
-      case 'changeAny': {
-        return new FormGroup({
-          value: new FormControl(
-            this.context.data.changeValue,
-            Validators.required
-          ),
-        });
-      }
-
-      case 'changeRu': {
-        return new FormGroup({
-          key: new FormControl(this.context.data.key),
-          value: new FormControl(this.context.data.value, Validators.required),
-        });
-      }
-    }
+  private initForm() {
+    return new FormGroup({
+      key: new FormControl(this.context.data.key),
+      value: new FormControl(this.context.data.value, Validators.required),
+    });
   }
 }

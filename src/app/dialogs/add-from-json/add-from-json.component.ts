@@ -2,7 +2,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TuiDialogContext } from '@taiga-ui/core';
 import { TranslateTypes } from 'src/app/core/interfaces/types';
-import { TranslateServerService } from 'src/app/core/services/translate-service.service';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 
 @Component({
@@ -12,7 +11,6 @@ import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 })
 export class AddFromJsonComponent implements OnInit {
   constructor(
-    private service: TranslateServerService,
     @Inject(POLYMORPHEUS_CONTEXT)
     public readonly context: TuiDialogContext<
       any,
@@ -29,7 +27,7 @@ export class AddFromJsonComponent implements OnInit {
   });
 
   get langs() {
-    return this.service.langs;
+    return;
   }
 
   isLoading: boolean = false;
@@ -41,31 +39,5 @@ export class AddFromJsonComponent implements OnInit {
     this.isLoading = true;
     const { lang, json, project } = this.form.value;
     const data = { lang, type: project, translates: json };
-    this.service.addLang(data).subscribe({
-      next: (res) => {
-        this.context.completeWith({
-          lang,
-          project,
-        });
-        this.isLoading = false;
-      },
-      error: (err) => {
-        if (err?.error?.error === 'This lang is exist!') {
-          this.service.updateTranslate(data).subscribe({
-            next: (res) => {
-              this.context.completeWith({
-                lang,
-                project,
-              });
-              this.isLoading = false;
-            },
-            error: (err) => {
-              console.log(err);
-              this.isLoading = false;
-            },
-          });
-        } else this.isLoading = false;
-      },
-    });
   }
 }

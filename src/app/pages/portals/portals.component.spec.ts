@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LocaleEditorComponent } from './locale-editor.component';
+import { PortalsComponent } from './portals.component';
 
-describe('LocaleEditorComponent', () => {
-  let component: LocaleEditorComponent;
-  let fixture: ComponentFixture<LocaleEditorComponent>;
+describe('PortalsComponent', () => {
+  let component: PortalsComponent;
+  let fixture: ComponentFixture<PortalsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LocaleEditorComponent ]
+      declarations: [ PortalsComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LocaleEditorComponent);
+    fixture = TestBed.createComponent(PortalsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
