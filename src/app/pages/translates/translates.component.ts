@@ -11,12 +11,15 @@ import {
   TuiDialogService,
   TuiNotification,
 } from '@taiga-ui/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { Portal, PortalObj } from 'src/app/core/interfaces/types';
+import { BehaviorSubject } from 'rxjs';
+import { PortalObj } from 'src/app/core/interfaces/types';
 import { PortalsService } from 'src/app/core/services/portals.service';
 import { UseKeyComponent } from 'src/app/dialogs/use-key/use-key.component';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TranslatesService } from 'src/app/core/services/translates.service';
+import { AddNewKeyComponent } from 'src/app/dialogs/add-new-key/add-new-key.component';
+import { EditTranslateJsonComponent } from 'src/app/dialogs/edit-translate-json/edit-translate-json.component';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 enum ComponentMode {
   compare = 'compare',
@@ -38,7 +41,8 @@ export class TranslatesComponent implements OnInit {
     private dialogService: TuiDialogService,
     private cdr: ChangeDetectorRef,
     private translateService: TranslatesService,
-    private alertService: TuiAlertService
+    private alertService: TuiAlertService,
+    private auth: AuthService
   ) {}
 
   mode: BehaviorSubject<ComponentMode> = new BehaviorSubject<ComponentMode>(
@@ -53,6 +57,10 @@ export class TranslatesComponent implements OnInit {
   compareTranslate: Record<string, string> | null = null;
   isFilter: boolean = false;
   isLoading: boolean = false;
+
+  get isSuper() {
+    return this.auth.isSuper;
+  }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe((params) => {
@@ -88,7 +96,43 @@ export class TranslatesComponent implements OnInit {
       });
   }
 
-  openAddTranslateKeyDialog() {}
+  openAddTranslateKeyDialog() {
+    this.dialogService
+      .open(new PolymorpheusComponent(AddNewKeyComponent))
+      .subscribe((result) => {
+        const { key, value } = result!;
+        if (this.ruTranslate!.hasOwnProperty(key)) {
+          this.alertService
+            .open('Такой ключ уже существует!', {
+              status: TuiNotification.Error,
+            })
+            .subscribe();
+        } else {
+          this.ruTranslate![key] = value;
+          this.addNewKey(key);
+        }
+      });
+  }
+
+  editTranslatesWithJson(locale: 'ru' | 'compare') {
+    this.dialogService
+      .open<{ locale: string; json: any }>(
+        new PolymorpheusComponent(EditTranslateJsonComponent),
+        {
+          data: {
+            locale: locale === 'ru' ? 'ru' : this.locale,
+            json:
+              locale === 'ru'
+                ? JSON.stringify(this.ruTranslate)
+                : JSON.stringify(this.compareTranslate),
+          },
+        }
+      )
+      .subscribe((result) => {
+        const { json, locale } = result;
+        this.updateTranslateWithJson(json, locale);
+      });
+  }
 
   private init() {
     const portals = this.portalsService._portals.getValue();
@@ -116,9 +160,11 @@ export class TranslatesComponent implements OnInit {
           stringifyCompareTranslate.translates
         );
     }
+
+    setTimeout(() => this.cdr.markForCheck());
   }
 
-  updateTranslate(
+  private updateTranslate(
     data: { key: string; value: string; changeValue?: string },
     oldKey: string
   ) {
@@ -154,9 +200,80 @@ export class TranslatesComponent implements OnInit {
       .subscribe({
         next: (res) => {
           console.log(res);
-          this.alertService.open('Success edited!', {
-            status: TuiNotification.Success,
+          this.alertService
+            .open('Success edited!', {
+              status: TuiNotification.Success,
+            })
+            .subscribe();
+          this.isLoading = false;
+          this.portalsService.getMemoPortals();
+          setTimeout(() => this.init());
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.log(err);
+          this.alertService.open(err.message.message, {
+            status: TuiNotification.Error,
           });
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  private addNewKey(key: string) {
+    this.isLoading = true;
+    const id = this.portal?.translates.find((el) => el.locale === 'ru')?.id;
+
+    this.translateService
+      .editTranslate({
+        id,
+        translates: JSON.parse(JSON.stringify(this.ruTranslate)),
+      })
+      .subscribe({
+        next: (res) => {
+          this.alertService
+            .open(`Ключ: ${key} добавлен!`, {
+              status: TuiNotification.Success,
+            })
+            .subscribe();
+          this.isLoading = false;
+          this.portalsService.getMemoPortals();
+          setTimeout(() => this.init());
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.log(err);
+          this.alertService.open(err.message.message, {
+            status: TuiNotification.Error,
+          });
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  private updateTranslateWithJson(json: string, locale: string) {
+    this.isLoading = true;
+
+    const id = this.portal?.translates.find((el) => el.locale === locale)?.id;
+    if (!id) {
+      console.error('Translate is not defined!');
+      return;
+    }
+
+    this.translateService
+      .editTranslate({
+        id,
+        translates: JSON.parse(json),
+      })
+      .subscribe({
+        next: (res) => {
+          this.alertService
+            .open(`Переводы: ${locale} обновлены!`, {
+              status: TuiNotification.Success,
+            })
+            .subscribe();
           this.isLoading = false;
           this.portalsService.getMemoPortals();
           setTimeout(() => this.init());

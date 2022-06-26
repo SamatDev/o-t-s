@@ -1,7 +1,13 @@
 <div class="tools-row">
   <button tuiButton size="s" (click)="location.back()">Назад</button>
 
-  <button tuiButton size="s" appearance="accent" (click)="openAddLangDialog()">
+  <button
+    *ngIf="isSuper"
+    tuiButton
+    size="s"
+    appearance="accent"
+    (click)="openAddLangDialog()"
+  >
     Добавить язык
   </button>
 </div>

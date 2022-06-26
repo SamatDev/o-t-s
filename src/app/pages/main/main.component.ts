@@ -40,6 +40,10 @@ export class MainComponent implements OnInit {
 
   isShowForm: boolean = false;
 
+  get isSuper() {
+    return this.authService.isSuper;
+  }
+
   ngOnInit(): void {}
 
   addPortal() {

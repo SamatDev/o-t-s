@@ -16,9 +16,10 @@ import { SharedModule } from './shared/shared.module';
 import { BasicAuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ErrorInterceptor } from './core/interceptors/unauth.interceptor';
 import { MenuComponent } from './core/wrapper/menu/menu.component';
+import { EditTranslateJsonComponent } from './dialogs/edit-translate-json/edit-translate-json.component';
 
 @NgModule({
-  declarations: [WrapperComponent, HeaderComponent, MenuComponent],
+  declarations: [WrapperComponent, HeaderComponent, MenuComponent, EditTranslateJsonComponent],
   imports: [
     BrowserModule,
     TuiRootModule,

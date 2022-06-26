@@ -47,7 +47,7 @@ export class UseKeyComponent implements AfterViewInit {
       if (this.context.data.changeValue !== null) {
         this.form.addControl(
           'changeValue',
-          new FormControl('', Validators.required)
+          new FormControl(this.context.data.changeValue, Validators.required)
         );
         this.mode = 'changeAny';
       } else this.mode = 'changeRu';

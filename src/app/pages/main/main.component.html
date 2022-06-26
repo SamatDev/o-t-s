@@ -1,5 +1,5 @@
 <button
-  *ngIf="!isShowForm"
+  *ngIf="!isShowForm && isSuper"
   tuiButton
   size="s"
   (click)="isShowForm = !isShowForm"
@@ -31,3 +31,5 @@
     </button>
   </form>
 </div>
+
+<h2 *ngIf="!isSuper"><- Выберите портал для просмотра</h2>

@@ -1,14 +1,28 @@
 <div class="tools-row">
   <button tuiButton size="s" (click)="location.back()">Назад</button>
 
-  <button
-    tuiButton
-    size="s"
-    appearance="accent"
-    (click)="openAddTranslateKeyDialog()"
-  >
-    Добавить ключ
-  </button>
+  <ng-container *ngIf="isSuper">
+    <button
+      tuiButton
+      size="s"
+      appearance="accent"
+      (click)="openAddTranslateKeyDialog()"
+    >
+      Добавить ключ
+    </button>
+
+    <button tuiButton size="s" (click)="editTranslatesWithJson('ru')">
+      ru JSON
+    </button>
+    <button
+      *ngIf="this.locale !== 'ru'"
+      tuiButton
+      size="s"
+      (click)="editTranslatesWithJson('compare')"
+    >
+      {{ this.locale }} JSON
+    </button>
+  </ng-container>
 </div>
 
 <div class="wrapper">
