@@ -1,4 +1,7 @@
 <app-header *ngIf="!isLoginPage"></app-header>
-<tui-root>
-  <router-outlet></router-outlet>
-</tui-root>
+<div class="wrapper">
+  <app-menu *ngIf="!isLoginPage"></app-menu>
+  <tui-root>
+    <router-outlet></router-outlet>
+  </tui-root>
+</div>

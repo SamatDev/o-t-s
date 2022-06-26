@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LocaleEditorComponent } from './locale-editor.component';
+import { EditTranslateJsonComponent } from './edit-translate-json.component';
 
-describe('LocaleEditorComponent', () => {
-  let component: LocaleEditorComponent;
-  let fixture: ComponentFixture<LocaleEditorComponent>;
+describe('EditTranslateJsonComponent', () => {
+  let component: EditTranslateJsonComponent;
+  let fixture: ComponentFixture<EditTranslateJsonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LocaleEditorComponent ]
+      declarations: [ EditTranslateJsonComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LocaleEditorComponent);
+    fixture = TestBed.createComponent(EditTranslateJsonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

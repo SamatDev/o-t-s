@@ -5,22 +5,21 @@ import {
   TuiDialogModule,
   TUI_SANITIZER,
   TuiAlertModule,
-  TuiThemeNightModule,
-  TuiModeModule,
 } from '@taiga-ui/core';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ApiService } from './core/services/api.service';
 import { WrapperComponent } from './core/wrapper/wrapper.component';
 import { RouterModule } from '@angular/router';
 import { HeaderComponent } from './core/wrapper/header/header.component';
 import { SharedModule } from './shared/shared.module';
 import { BasicAuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ErrorInterceptor } from './core/interceptors/unauth.interceptor';
+import { MenuComponent } from './core/wrapper/menu/menu.component';
+import { EditTranslateJsonComponent } from './dialogs/edit-translate-json/edit-translate-json.component';
 
 @NgModule({
-  declarations: [WrapperComponent, HeaderComponent],
+  declarations: [WrapperComponent, HeaderComponent, MenuComponent, EditTranslateJsonComponent],
   imports: [
     BrowserModule,
     TuiRootModule,

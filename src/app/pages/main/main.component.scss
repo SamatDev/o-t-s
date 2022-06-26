@@ -4,19 +4,6 @@
   min-height: 90vh;
 }
 
-.menu {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  padding-right: 1rem;
-  button {
-    margin-bottom: 0.5rem;
-    width: 100%;
-  }
-  margin-right: 1rem;
-  border-right: 1px solid var(--tui-base-04);
-}
-
-.bold {
-  font-weight: 900;
+form tui-input {
+  margin-bottom: 1rem;
 }

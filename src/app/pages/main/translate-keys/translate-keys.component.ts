@@ -13,7 +13,6 @@ import {
 import { TuiAlertService, TuiDialogService } from '@taiga-ui/core';
 import { Subject } from 'rxjs';
 import { TranslateTypes } from 'src/app/core/interfaces/types';
-import { TranslateServerService } from 'src/app/core/services/translate-service.service';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { UseKeyComponent } from 'src/app/dialogs/use-key/use-key.component';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -37,7 +36,6 @@ export class TranslateKeysComponent
   }
 
   constructor(
-    private translateServerService: TranslateServerService,
     private cdr: ChangeDetectorRef,
     @Inject(TuiDialogService) private readonly dialogService: TuiDialogService,
     @Inject(Injector) private readonly injector: Injector,
@@ -59,17 +57,7 @@ export class TranslateKeysComponent
     if (this.lang && this.project) this.getTranslates(this.lang, this.project);
   }
 
-  ngOnInit(): void {
-    this.translateServerService.getFrontendTranslates('ru').subscribe((res) => {
-      this.frontendRu = objectToRecord(res);
-      this.cdr.markForCheck();
-    });
-
-    this.translateServerService.getGamesTranslates('ru').subscribe((res) => {
-      this.gamesRu = objectToRecord(res);
-      this.cdr.markForCheck();
-    });
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.$update?.subscribe((next) => {
@@ -86,32 +74,6 @@ export class TranslateKeysComponent
   update(lang: string, project: TranslateTypes) {
     if (!lang || !project) return;
     this.isLoading = true;
-    switch (project) {
-      case 'frontend': {
-        this.translateServerService
-          .getFrontendTranslates(lang)
-          .subscribe((v) => {
-            if (lang !== 'ru') this.translateData = objectToRecord(v);
-            else this.translateData = null;
-            this.isLoading = false;
-            this.alertService.open('Updated').subscribe();
-            this.cdr.markForCheck();
-          });
-        break;
-      }
-
-      case 'games': {
-        this.translateServerService.getGamesTranslates(lang).subscribe((v) => {
-          if (lang !== 'ru') this.translateData = objectToRecord(v);
-          else this.translateData = null;
-          this.isLoading = false;
-          this.alertService.open('Updated').subscribe();
-
-          this.cdr.markForCheck();
-        });
-        break;
-      }
-    }
   }
 
   openChangeKeysDialog(key: string, value: string) {
@@ -183,23 +145,7 @@ export class TranslateKeysComponent
       case 'changeAny': {
         if (!this.translateData) return;
         this.translateData[data.key] = value;
-        this.translateServerService
-          .updateTranslate({
-            lang,
-            type: project,
-            translates: this.translateData,
-          })
-          .subscribe({
-            next: () => {
-              this.isLoading = false;
-              this.alertService.open('Success').subscribe();
-              this.cdr.markForCheck();
-            },
-            error: (err) => {
-              console.log(err);
-              this.isLoading = false;
-            },
-          });
+
         break;
       }
 
@@ -212,27 +158,6 @@ export class TranslateKeysComponent
         );
         if (data.oldKey) delete translates[data.oldKey];
         translates[data.key] = value;
-        this.translateServerService
-          .updateTranslate({
-            lang,
-            type: project,
-            translates,
-          })
-          .subscribe({
-            next: (res) => {
-              project === 'frontend'
-                ? (this.frontendRu![data.key] = value)
-                : (this.gamesRu![data.key] = value);
-              this.isLoading = false;
-              this.alertService.open('Success').subscribe();
-
-              this.cdr.markForCheck();
-            },
-            error: (err) => {
-              console.log(err);
-              this.isLoading = false;
-            },
-          });
 
         break;
       }

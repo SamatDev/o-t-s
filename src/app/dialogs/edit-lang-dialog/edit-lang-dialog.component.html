@@ -1,6 +1,4 @@
 <form [formGroup]="form">
-  <h3>Выбранный портал: {{ portalInfo?.name }} ({{ portalInfo?.id }})</h3>
-
   <tui-input formControlName="label">
     Название:
     <input size="s" tuiTextfield type="text" />
@@ -22,5 +20,13 @@
     </tui-toggle>
   </p>
 
-  <button tuiButton size="s" (click)="add($event)">Добавить</button>
+  <button
+    tuiButton
+    size="s"
+    (click)="save($event)"
+    [disabled]="form.invalid || isLoading"
+    [showLoader]="isLoading"
+  >
+    Сохранить
+  </button>
 </form>

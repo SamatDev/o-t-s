@@ -1,0 +1,15 @@
+<form [formGroup]="form">
+  <tui-input formControlName="key">
+    Ключ:
+    <input size="s" tuiTextfield type="text" />
+  </tui-input>
+
+  <tui-input formControlName="value">
+    Значение на русском:
+    <input size="s" tuiTextfield type="text" />
+  </tui-input>
+
+  <button tuiButton size="s" (click)="add($event)" [disabled]="form.invalid">
+    Добавтиь
+  </button>
+</form>

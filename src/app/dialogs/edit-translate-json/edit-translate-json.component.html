@@ -1,0 +1,7 @@
+<form [formGroup]="form">
+  <p>Выбранная локаль: {{ form.get("locale")?.value }}</p>
+
+  <tui-text-area formControlName="json"> JSON </tui-text-area>
+
+  <button tuiButton size="s" (click)="save($event)">Сохранить</button>
+</form>

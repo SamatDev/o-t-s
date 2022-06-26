@@ -1,73 +1,35 @@
-<div class="menu">
-  <tui-hosted-dropdown
-    tuiDropdownAlign="left"
-    [content]="dropdownFrontend"
-    [(open)]="openFr"
-  >
-    <button tuiButton size="s" type="button" [iconRight]="icon">
-      Frontend translates
-    </button>
-  </tui-hosted-dropdown>
+<button
+  *ngIf="!isShowForm && isSuper"
+  tuiButton
+  size="s"
+  (click)="isShowForm = !isShowForm"
+>
+  Добавить портал
+</button>
 
-  <tui-hosted-dropdown
-    tuiDropdownAlign="left"
-    [content]="dropdownGames"
-    [(open)]="openG"
-  >
-    <button tuiButton size="s" type="button" [iconRight]="icon">
-      Games translates
-    </button>
-  </tui-hosted-dropdown>
-  <ng-container *ngIf="isSuper">
-    <button tuiButton size="s" (click)="openJsonUpdateForm()">
-      Добавить | обнoвить (json)
-    </button>
+<div class="form" *ngIf="isShowForm">
+  <form [formGroup]="form">
+    <tui-input formControlName="name">
+      Название проекта:
+      <input size="s" tuiTextfield type="text" />
+    </tui-input>
 
-    <button tuiButton appearance="accent" size="s" (click)="openAddLocale()">
-      Добавить язык
-    </button>
+    <tui-input formControlName="path">
+      Путь (без пробелов на английском):
+      <input size="s" tuiTextfield type="text" />
+    </tui-input>
 
-    <button tuiButton appearance="accent" size="s" (click)="openLocaleEditor()">
-      Редактор языков
+    <tui-text-area
+      formControlName="translates"
+      class="tui-space_bottom-4 field-large"
+    >
+      json
+    </tui-text-area>
+
+    <button tuiButton (click)="addPortal()" [disabled]="form.invalid">
+      Добавить
     </button>
-  </ng-container>
+  </form>
 </div>
 
-<app-translate-keys
-  [lang]="lang"
-  [project]="project"
-  [update]="$update"
-></app-translate-keys>
-
-<ng-template #icon>
-  <tui-svg
-    src="tuiIconChevronDown"
-    class="icon"
-    [class.icon_rotated]="openG"
-  ></tui-svg>
-</ng-template>
-
-<ng-template #dropdownFrontend>
-  <tui-data-list>
-    <button
-      *ngFor="let lang of langs"
-      tuiOption
-      (click)="onClick('frontend', lang.lang)"
-    >
-      {{ lang.label }} {{ lang.active ? "" : " - неактивен" }}
-    </button>
-  </tui-data-list>
-</ng-template>
-
-<ng-template #dropdownGames>
-  <tui-data-list>
-    <button
-      *ngFor="let lang of langs"
-      tuiOption
-      (click)="onClick('games', lang.lang)"
-      [ngClass]="{ bold: lang.active }"
-    >
-      {{ lang.label }} {{ lang.active ? "" : " - неактивен" }}
-    </button>
-  </tui-data-list>
-</ng-template>
+<h2 *ngIf="!isSuper"><- Выберите портал для просмотра</h2>

@@ -1,0 +1,8 @@
+<a
+  *ngFor="let portal of portals | async | keyvalue"
+  tuiLink
+  [routerLink]="['portals', portal.key]"
+  routerLinkActive="active-link"
+>
+  {{ portal.value.name }}
+</a>
