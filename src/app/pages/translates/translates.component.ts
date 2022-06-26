@@ -11,7 +11,7 @@ import {
   TuiDialogService,
   TuiNotification,
 } from '@taiga-ui/core';
-import { BehaviorSubject, delay } from 'rxjs';
+import { BehaviorSubject, first } from 'rxjs';
 import { PortalObj } from 'src/app/core/interfaces/types';
 import { PortalsService } from 'src/app/core/services/portals.service';
 import { UseKeyComponent } from 'src/app/dialogs/use-key/use-key.component';
@@ -138,36 +138,37 @@ export class TranslatesComponent implements OnInit {
 
   private init() {
     this.isLoading = true;
-    this.portalsService._portals.subscribe((portals) => {
-      console.log(portals);
-      const portal = portals[this.path];
-      if (!portal) {
-        this.router.navigateByUrl('');
-        return;
-      }
-      this.portal = portal;
+    this.portalsService._portals
+      .pipe(first((el) => !!el[this.path]))
+      .subscribe((portals) => {
+        const portal = portals[this.path];
+        if (!portal) {
+          this.router.navigateByUrl('');
+          return;
+        }
+        this.portal = portal;
 
-      const stringifyRuTranslate = portal.translates.find(
-        (el) => el.locale === 'ru'
-      );
-
-      if (stringifyRuTranslate)
-        this.ruTranslate = JSON.parse(stringifyRuTranslate.translates);
-
-      if (this.locale !== 'ru') {
-        const stringifyCompareTranslate = portal.translates.find(
-          (el) => el.locale === this.locale
+        const stringifyRuTranslate = portal.translates.find(
+          (el) => el.locale === 'ru'
         );
 
-        if (stringifyCompareTranslate)
-          this.compareTranslate = JSON.parse(
-            stringifyCompareTranslate.translates
-          );
-      }
+        if (stringifyRuTranslate)
+          this.ruTranslate = JSON.parse(stringifyRuTranslate.translates);
 
-      setTimeout(() => this.cdr.markForCheck());
-      this.isLoading = false;
-    });
+        if (this.locale !== 'ru') {
+          const stringifyCompareTranslate = portal.translates.find(
+            (el) => el.locale === this.locale
+          );
+
+          if (stringifyCompareTranslate)
+            this.compareTranslate = JSON.parse(
+              stringifyCompareTranslate.translates
+            );
+        }
+
+        setTimeout(() => this.cdr.markForCheck());
+        this.isLoading = false;
+      });
   }
 
   private updateTranslate(

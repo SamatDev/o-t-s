@@ -5,11 +5,11 @@ import {
   ChangeDetectionStrategy,
   Inject,
   Injector,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   TuiAlertService,
-  TuiDialogContext,
   TuiDialogService,
   TuiNotification,
 } from '@taiga-ui/core';
@@ -20,7 +20,6 @@ import { PortalsService } from 'src/app/core/services/portals.service';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { AddLangLocaleComponent } from 'src/app/dialogs/add-lang-locale/add-lang-locale.component';
 import { LangsService } from 'src/app/core/services/langs.service';
-import { PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
 import { DialogDeleteComponent } from 'src/app/dialogs/delete-dialog/delete-dialog.component';
 import { EditLangDialogComponent } from 'src/app/dialogs/edit-lang-dialog/edit-lang-dialog.component';
 
@@ -48,7 +47,8 @@ export class PortalsComponent implements OnInit {
     private alert: TuiAlertService,
     private langsService: LangsService,
     private router: Router,
-    @Inject(Injector) private readonly injector: Injector
+    @Inject(Injector) private readonly injector: Injector,
+    private cdr: ChangeDetectorRef
   ) {}
 
   get portals() {
@@ -138,19 +138,28 @@ export class PortalsComponent implements OnInit {
       });
   }
 
+  isLoading: boolean = false;
+
   private init() {
-    const portal = this.portals[this.path];
-    if (!portal) {
-      this.router.navigateByUrl('');
-      return;
-    }
-    this.portalInfo = {
-      id: portal.id,
-      name: portal.name,
-    };
-    this.langs.next(portal.langs);
-    this.alert
-      .open('Content updated', { status: TuiNotification.Info })
-      .subscribe();
+    this.isLoading = true;
+    this.portalsService._portals
+      .pipe(first((portals) => !!portals[this.path]))
+      .subscribe((portals) => {
+        const portal = portals[this.path];
+        if (!portal) {
+          this.router.navigateByUrl('');
+          return;
+        }
+        this.portalInfo = {
+          id: portal.id,
+          name: portal.name,
+        };
+        this.langs.next(portal.langs);
+        this.alert
+          .open('Content updated', { status: TuiNotification.Info })
+          .subscribe();
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      });
   }
 }
