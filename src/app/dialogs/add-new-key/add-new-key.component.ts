@@ -27,7 +27,7 @@ export class AddNewKeyComponent implements OnInit {
     const { key, value } = this.form.value;
     this.context.completeWith({
       key: key.trim(),
-      value,
+      value: value.replace(/"/g, ''),
     });
   }
 }

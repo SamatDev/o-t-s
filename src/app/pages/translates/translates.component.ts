@@ -11,7 +11,7 @@ import {
   TuiDialogService,
   TuiNotification,
 } from '@taiga-ui/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, first } from 'rxjs';
 import { PortalObj } from 'src/app/core/interfaces/types';
 import { PortalsService } from 'src/app/core/services/portals.service';
 import { UseKeyComponent } from 'src/app/dialogs/use-key/use-key.component';
@@ -98,7 +98,9 @@ export class TranslatesComponent implements OnInit {
 
   openAddTranslateKeyDialog() {
     this.dialogService
-      .open(new PolymorpheusComponent(AddNewKeyComponent))
+      .open<{ key: string; value: string }>(
+        new PolymorpheusComponent(AddNewKeyComponent)
+      )
       .subscribe((result) => {
         const { key, value } = result!;
         if (this.ruTranslate!.hasOwnProperty(key)) {
@@ -108,7 +110,7 @@ export class TranslatesComponent implements OnInit {
             })
             .subscribe();
         } else {
-          this.ruTranslate![key] = value;
+          this.ruTranslate![key] = value.replace(/"/g, '');
           this.addNewKey(key);
         }
       });
@@ -135,33 +137,38 @@ export class TranslatesComponent implements OnInit {
   }
 
   private init() {
-    const portals = this.portalsService._portals.getValue();
-    const portal = portals[this.path];
-    if (!portal) {
-      this.router.navigateByUrl('');
-      return;
-    }
-    this.portal = portal;
+    this.isLoading = true;
+    this.portalsService._portals
+      .pipe(first((el) => !!el[this.path]))
+      .subscribe((portals) => {
+        const portal = portals[this.path];
+        if (!portal) {
+          this.router.navigateByUrl('');
+          return;
+        }
+        this.portal = portal;
 
-    const stringifyRuTranslate = portal.translates.find(
-      (el) => el.locale === 'ru'
-    );
-
-    if (stringifyRuTranslate)
-      this.ruTranslate = JSON.parse(stringifyRuTranslate.translates);
-
-    if (this.locale !== 'ru') {
-      const stringifyCompareTranslate = portal.translates.find(
-        (el) => el.locale === this.locale
-      );
-
-      if (stringifyCompareTranslate)
-        this.compareTranslate = JSON.parse(
-          stringifyCompareTranslate.translates
+        const stringifyRuTranslate = portal.translates.find(
+          (el) => el.locale === 'ru'
         );
-    }
 
-    setTimeout(() => this.cdr.markForCheck());
+        if (stringifyRuTranslate)
+          this.ruTranslate = JSON.parse(stringifyRuTranslate.translates);
+
+        if (this.locale !== 'ru') {
+          const stringifyCompareTranslate = portal.translates.find(
+            (el) => el.locale === this.locale
+          );
+
+          if (stringifyCompareTranslate)
+            this.compareTranslate = JSON.parse(
+              stringifyCompareTranslate.translates
+            );
+        }
+
+        setTimeout(() => this.cdr.markForCheck());
+        this.isLoading = false;
+      });
   }
 
   private updateTranslate(
@@ -182,10 +189,10 @@ export class TranslatesComponent implements OnInit {
     if (this.locale === 'ru') {
       if (oldKey !== data.key) {
         delete this.ruTranslate[oldKey];
-        this.ruTranslate[data.key] = data.value;
-      } else this.ruTranslate[data.key] = data.value;
+        this.ruTranslate[data.key] = data.value.replace(/"/g, '');
+      } else this.ruTranslate[data.key] = data.value.replace(/"/g, '');
     } else if (this.compareTranslate && data.changeValue) {
-      this.compareTranslate[data.key] = data.changeValue;
+      this.compareTranslate[data.key] = data.changeValue.replace(/"/g, '');
     }
 
     this.translateService
