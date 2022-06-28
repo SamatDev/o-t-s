@@ -11,6 +11,10 @@ export class FilterByTranslateDataPipe implements PipeTransform {
     isFilter: boolean
   ): KeyValue<string, string>[] | null {
     if (!isFilter || value === null || translateData === null) return value;
-    return value.filter((el) => !!!translateData[el.key]);
+    return value.filter((el) => {
+      if (typeof translateData[el.key] === 'string') {
+        return !!!translateData[el.key].trim();
+      } else return !!!translateData[el.key];
+    });
   }
 }

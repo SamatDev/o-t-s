@@ -58,11 +58,12 @@ export class MainComponent implements OnInit {
       })
       .subscribe(
         (res) => {
-          this.portalsService.getMemoPortals();
-          this.isShowForm = false;
-          this.alertService
-            .open('Портал добавен', { status: TuiNotification.Success })
-            .subscribe();
+          this.portalsService.getMemoPortals().subscribe(() => {
+            this.isShowForm = false;
+            this.alertService
+              .open('Портал добавен', { status: TuiNotification.Success })
+              .subscribe();
+          });
         },
         (err) => {
           console.log(err);

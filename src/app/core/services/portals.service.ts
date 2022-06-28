@@ -9,7 +9,7 @@ import { ApiService } from './api.service';
 })
 export class PortalsService {
   constructor(private api: ApiService, private alertService: TuiAlertService) {
-    this.getMemoPortals();
+    this.getMemoPortals().subscribe();
   }
 
   _portals: BehaviorSubject<Portals> = new BehaviorSubject({});
@@ -19,14 +19,21 @@ export class PortalsService {
   }
 
   getMemoPortals() {
-    this.api.get<Portals>('/portals/fast').subscribe({
-      next: (res) => this._portals.next(res),
-      error: (err) => {
-        console.log(err);
-        this.alertService
-          .open(err.message, { status: TuiNotification.Error })
-          .subscribe();
-      },
+    return new Observable((observer) => {
+      this.api.get<Portals>('/portals/fast').subscribe({
+        next: (res) => {
+          this._portals.next(res);
+          observer.next();
+          observer.complete();
+          observer.unsubscribe();
+        },
+        error: (err) => {
+          console.log(err);
+          this.alertService
+            .open(err.message, { status: TuiNotification.Error })
+            .subscribe();
+        },
+      });
     });
   }
 

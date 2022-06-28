@@ -62,7 +62,7 @@ export class PortalsComponent implements OnInit {
   path!: string;
 
   ngOnInit(): void {
-    this.portalsService.getMemoPortals();
+    this.portalsService.getMemoPortals().subscribe();
 
     this.activatedRoute.params.subscribe((params) => {
       this.path = params['path'];
@@ -94,7 +94,9 @@ export class PortalsComponent implements OnInit {
           const langs = [...this.langs.getValue()];
           langs.push(res! as Lang);
           this.langs.next(langs);
-          this.portalsService.getMemoPortals();
+          this.portalsService.getMemoPortals().subscribe(() => {
+            this.init();
+          });
         }
       });
   }
@@ -106,8 +108,7 @@ export class PortalsComponent implements OnInit {
       })
       .subscribe((result) => {
         if (result! as boolean | Lang) {
-          this.portalsService.getMemoPortals();
-          setTimeout(() => {
+          this.portalsService.getMemoPortals().subscribe(() => {
             this.init();
           });
         }
@@ -126,8 +127,9 @@ export class PortalsComponent implements OnInit {
                   status: TuiNotification.Warning,
                 })
                 .subscribe();
-              this.portalsService.getMemoPortals();
-              setTimeout(() => this.init());
+              this.portalsService.getMemoPortals().subscribe(() => {
+                this.init();
+              });
             },
             error: (err) =>
               this.alert

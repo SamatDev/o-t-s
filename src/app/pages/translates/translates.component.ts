@@ -63,6 +63,7 @@ export class TranslatesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('called onInit translates');
     this.activatedRoute.params.subscribe((params) => {
       this.path = params['path'];
       this.locale = params['locale'];
@@ -136,12 +137,15 @@ export class TranslatesComponent implements OnInit {
       });
   }
 
-  private init() {
+  private init(update: boolean = false) {
+    console.log('called init');
     this.isLoading = true;
+    if (update) this.portalsService._portals.next({});
     this.portalsService._portals
       .pipe(first((el) => !!el[this.path]))
       .subscribe((portals) => {
         const portal = portals[this.path];
+        console.log('portals: ', portals);
         if (!portal) {
           this.router.navigateByUrl('');
           return;
@@ -213,8 +217,9 @@ export class TranslatesComponent implements OnInit {
             })
             .subscribe();
           this.isLoading = false;
-          this.portalsService.getMemoPortals();
-          setTimeout(() => this.init());
+          this.portalsService.getMemoPortals().subscribe(() => {
+            this.init();
+          });
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -245,8 +250,9 @@ export class TranslatesComponent implements OnInit {
             })
             .subscribe();
           this.isLoading = false;
-          this.portalsService.getMemoPortals();
-          setTimeout(() => this.init());
+          this.portalsService.getMemoPortals().subscribe(() => {
+            this.init();
+          });
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -282,8 +288,9 @@ export class TranslatesComponent implements OnInit {
             })
             .subscribe();
           this.isLoading = false;
-          this.portalsService.getMemoPortals();
-          setTimeout(() => this.init());
+          this.portalsService.getMemoPortals().subscribe(() => {
+            this.init();
+          });
           this.cdr.markForCheck();
         },
         error: (err) => {
