@@ -29,6 +29,9 @@ export class PortalsService {
         },
         error: (err) => {
           console.log(err);
+          observer.error(err);
+          observer.complete();
+          observer.unsubscribe();
           this.alertService
             .open(err.message, { status: TuiNotification.Error })
             .subscribe();
