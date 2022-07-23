@@ -18,7 +18,15 @@ export class TranslatesService {
     return this.api.post('/translates', data);
   }
 
-  editTranslate(data: Partial<Translate>) {
-    return this.api.put('/translates', data);
+  editTranslateFromJson(data: Partial<Translate>) {
+    return this.api.put('/translates/fromJSON', data);
+  }
+
+  addOrPatchKey(data: {
+    id: number;
+    newTranslates: Record<string, string>;
+    oldKeys?: string[];
+  }) {
+    return this.api.patch('/translates', data);
   }
 }

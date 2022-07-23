@@ -11,7 +11,7 @@ import {
   TuiDialogService,
   TuiNotification,
 } from '@taiga-ui/core';
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, first, Observable } from 'rxjs';
 import { PortalObj } from 'src/app/core/interfaces/types';
 import { PortalsService } from 'src/app/core/services/portals.service';
 import { UseKeyComponent } from 'src/app/dialogs/use-key/use-key.component';
@@ -111,8 +111,11 @@ export class TranslatesComponent implements OnInit {
             })
             .subscribe();
         } else {
-          this.ruTranslate![key] = value.replace(/"/g, '');
-          this.addNewKey(key);
+          const correctValue = value.replace(/"/g, '');
+          this.ruTranslate![key] = correctValue;
+          const newTranslates: Record<string, string> = {};
+          newTranslates[key] = correctValue;
+          this.addNewKey(newTranslates);
         }
       });
   }
@@ -183,6 +186,11 @@ export class TranslatesComponent implements OnInit {
     const translateId = this.portal?.translates.find(
       (el) => el.locale === this.locale
     )?.id;
+
+    let request: Observable<unknown>;
+    const newTranslates: Record<string, string> = {};
+    newTranslates[data.key] = data.value.replace(/"/g, '');
+
     if (!translateId || !this.ruTranslate) {
       this.alertService.open('translateId is not defined!', {
         status: TuiNotification.Error,
@@ -194,58 +202,70 @@ export class TranslatesComponent implements OnInit {
       if (oldKey !== data.key) {
         delete this.ruTranslate[oldKey];
         this.ruTranslate[data.key] = data.value.replace(/"/g, '');
-      } else this.ruTranslate[data.key] = data.value.replace(/"/g, '');
+        request = this.translateService.addOrPatchKey({
+          id: translateId,
+          newTranslates,
+          oldKeys: [oldKey],
+        });
+      } else {
+        this.ruTranslate[data.key] = data.value.replace(/"/g, '');
+        request = this.translateService.addOrPatchKey({
+          id: translateId,
+          newTranslates,
+        });
+      }
     } else if (this.compareTranslate && data.changeValue) {
-      this.compareTranslate[data.key] = data.changeValue.replace(/"/g, '');
-    }
-
-    this.translateService
-      .editTranslate({
+      const correctValue = data.changeValue.replace(/"/g, '');
+      this.compareTranslate[data.key] = correctValue;
+      newTranslates[data.key] = correctValue;
+      request = this.translateService.addOrPatchKey({
         id: translateId,
-        translates: JSON.parse(
-          JSON.stringify(
-            this.locale === 'ru' ? this.ruTranslate : this.compareTranslate
-          )
-        ),
-      })
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.alertService
-            .open('Success edited!', {
-              status: TuiNotification.Success,
-            })
-            .subscribe();
-          this.isLoading = false;
-          this.portalsService.getMemoPortals().subscribe(() => {
-            this.init();
-          });
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.log(err);
-          this.alertService.open(err.message.message, {
-            status: TuiNotification.Error,
-          });
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        },
+        newTranslates,
       });
+    } else return;
+
+    request.subscribe({
+      next: (res) => {
+        console.log(res);
+        this.alertService
+          .open('Success edited!', {
+            status: TuiNotification.Success,
+          })
+          .subscribe();
+        this.isLoading = false;
+        this.portalsService.getMemoPortals().subscribe(() => {
+          this.init();
+        });
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.log(err);
+        this.alertService.open(err.message.message, {
+          status: TuiNotification.Error,
+        });
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
+    });
   }
 
-  private addNewKey(key: string) {
+  private addNewKey(newTranslates: Record<string, string>) {
     this.isLoading = true;
     const id = this.portal?.translates.find((el) => el.locale === 'ru')?.id;
 
+    if (!id) {
+      return;
+    }
+
     this.translateService
-      .editTranslate({
+      .addOrPatchKey({
         id,
-        translates: JSON.parse(JSON.stringify(this.ruTranslate)),
+        newTranslates,
       })
       .subscribe({
         next: (res) => {
           this.alertService
-            .open(`Ключ: ${key} добавлен!`, {
+            .open(`Ключ добавлен!`, {
               status: TuiNotification.Success,
             })
             .subscribe();
@@ -276,7 +296,7 @@ export class TranslatesComponent implements OnInit {
     }
 
     this.translateService
-      .editTranslate({
+      .editTranslateFromJson({
         id,
         translates: JSON.parse(json),
       })
@@ -294,7 +314,6 @@ export class TranslatesComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: (err) => {
-          console.log(err);
           this.alertService.open(err.message.message, {
             status: TuiNotification.Error,
           });
