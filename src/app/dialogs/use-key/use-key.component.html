@@ -20,9 +20,83 @@
         [ngTemplateOutlet]="changeAny"
       ></ng-container>
     </ng-container>
+
+    <!-- фнкционал добавление/редактирования комментария -->
+    <ng-container *ngIf="isSuper">
+      <p class="buttons" *ngIf="!comment && !isShowAddCommentForm">
+        <button tuiButton size="s" (click)="showCommentForm()">
+          Добавить комментарий
+        </button>
+      </p>
+
+      <ng-container *ngIf="isShowAddCommentForm">
+        <form *ngIf="commentForm" [formGroup]="commentForm">
+          <tui-editor
+            exampleText="Термин..."
+            formControlName="comment"
+            [tools]="tools"
+          >
+            Напишите комментарий
+          </tui-editor>
+
+          <button
+            tuiButton
+            size="s"
+            class="add-comment"
+            appearance="accent"
+            (click)="cancelComment()"
+            style="margin-right: 1rem"
+          >
+            Отмена
+          </button>
+          <button
+            tuiButton
+            size="s"
+            class="add-comment"
+            (click)="saveComment()"
+            [showLoader]="isAddingComment"
+          >
+            Сохранить комментарий
+          </button>
+        </form>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="comment && !isShowAddCommentForm">
+      <tui-accordion-item class="comment">
+        Комментарий
+        <ng-template tuiAccordionItemContent>
+          <tui-editor-socket [content]="comment.comment"></tui-editor-socket>
+
+          <div class="buttons">
+            <button
+              appearance="secondary"
+              tuiButton
+              *ngIf="isSuper"
+              size="s"
+              (click)="deleteComment()"
+            >
+              Удалить комментарий
+            </button>
+
+            <button
+              *ngIf="isSuper"
+              tuiButton
+              size="s"
+              (click)="showCommentForm()"
+              appearance="accent"
+            >
+              Редактировать комментарий
+            </button>
+          </div>
+        </ng-template>
+      </tui-accordion-item>
+    </ng-container>
   </ng-container>
 
-  <button tuiButton size="s" (click)="save()">Сохранить</button>
+  <button *ngIf="!isShowAddCommentForm" tuiButton size="s" (click)="save()">
+    Сохранить
+  </button>
 </div>
 
 <ng-template #changeRu>

@@ -40,6 +40,28 @@ table {
     transition: 0.1s ease;
     &:hover {
       background-color: var(--tui-success-fill);
+      &.commented {
+        background-color: orange;
+      }
     }
   }
+}
+
+.tools {
+  display: flex;
+  flex-direction: row;
+  .tool {
+    margin-right: 1rem;
+    padding-right: 1rem;
+    border-right: 1px solid black;
+    &:last-child {
+      margin-right: 0;
+      border-right: none;
+    }
+  }
+}
+
+.commented {
+  font-weight: bold;
+  background-color: rgb(255, 198, 198);
 }

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
+  TuiAccordionModule,
   TuiActionModule,
   TuiDataListWrapperModule,
   TuiInputModule,
@@ -26,6 +27,7 @@ import { LangsService } from '../core/services/langs.service';
 import { TranslatesService } from '../core/services/translates.service';
 import { TuiActiveZoneModule } from '@taiga-ui/cdk';
 import { TuiSidebarModule } from '@taiga-ui/addon-mobile';
+import { TuiEditorModule, TuiEditorSocketModule } from '@taiga-ui/addon-editor';
 
 const modules = [
   FormsModule,
@@ -50,6 +52,9 @@ const modules = [
   TuiActiveZoneModule,
   TuiSidebarModule,
   TuiLinkModule,
+  TuiAccordionModule,
+  TuiEditorModule,
+  TuiEditorSocketModule,
 ];
 
 @NgModule({

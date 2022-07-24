@@ -16,6 +16,8 @@ import { TranslatesComponent } from './translates/translates.component';
 import { DialogDeleteComponent } from '../dialogs/delete-dialog/delete-dialog.component';
 import { EditLangDialogComponent } from '../dialogs/edit-lang-dialog/edit-lang-dialog.component';
 import { AddNewKeyComponent } from '../dialogs/add-new-key/add-new-key.component';
+import { TranslateCommentsService } from '../core/services/translate-comments.service';
+import { filterByCommentedKeysPipe } from '../core/pipes/filter-by-commented-translate-keys.pipe';
 
 const routes: Routes = [
   {
@@ -53,6 +55,7 @@ const routes: Routes = [
     TranslateKeysComponent,
     UseKeyComponent,
     FilterByTranslateDataPipe,
+    filterByCommentedKeysPipe,
     AddLangLocaleComponent,
     PortalsComponent,
     TranslatesComponent,

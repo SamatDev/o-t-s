@@ -20,6 +20,10 @@ import { TranslatesService } from 'src/app/core/services/translates.service';
 import { AddNewKeyComponent } from 'src/app/dialogs/add-new-key/add-new-key.component';
 import { EditTranslateJsonComponent } from 'src/app/dialogs/edit-translate-json/edit-translate-json.component';
 import { AuthService } from 'src/app/core/services/auth.service';
+import {
+  TranslateComment,
+  TranslateCommentsService,
+} from 'src/app/core/services/translate-comments.service';
 
 enum ComponentMode {
   compare = 'compare',
@@ -42,9 +46,10 @@ export class TranslatesComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private translateService: TranslatesService,
     private alertService: TuiAlertService,
-    private auth: AuthService
+    private auth: AuthService,
+    private translateCommentsService: TranslateCommentsService
   ) {}
-
+  isFilterByComment: boolean = false;
   mode: BehaviorSubject<ComponentMode> = new BehaviorSubject<ComponentMode>(
     ComponentMode.default
   );
@@ -57,13 +62,17 @@ export class TranslatesComponent implements OnInit {
   compareTranslate: Record<string, string> | null = null;
   isFilter: boolean = false;
   isLoading: boolean = false;
+  comments: TranslateComment[] = [];
 
   get isSuper() {
     return this.auth.isSuper;
   }
 
   ngOnInit(): void {
-    console.log('called onInit translates');
+    this.translateCommentsService.$onCommented.subscribe(() => {
+      this.init();
+    });
+
     this.activatedRoute.params.subscribe((params) => {
       this.path = params['path'];
       this.locale = params['locale'];
@@ -89,6 +98,8 @@ export class TranslatesComponent implements OnInit {
           changeValue: this.compareTranslate
             ? this.compareTranslate[key]
             : null,
+          comment: this.comments.find((el) => el.key === key) || null,
+          ruTranslateId: this.ruTranslateId,
         },
       })
       .subscribe((result: any) => {
@@ -139,42 +150,61 @@ export class TranslatesComponent implements OnInit {
         this.updateTranslateWithJson(json, locale);
       });
   }
+  ruTranslateId?: number;
+  recordComments: Record<string, string> = {};
 
   private init(update: boolean = false) {
-    console.log('called init');
     this.isLoading = true;
     if (update) this.portalsService._portals.next({});
+
     this.portalsService._portals
       .pipe(first((el) => !!el[this.path]))
       .subscribe((portals) => {
         const portal = portals[this.path];
-        console.log('portals: ', portals);
-        if (!portal) {
-          this.router.navigateByUrl('');
-          return;
-        }
-        this.portal = portal;
-
-        const stringifyRuTranslate = portal.translates.find(
+        const ruTranslateId = portal.translates.find(
           (el) => el.locale === 'ru'
-        );
+        )?.id;
 
-        if (stringifyRuTranslate)
-          this.ruTranslate = JSON.parse(stringifyRuTranslate.translates);
+        this.ruTranslateId = ruTranslateId;
 
-        if (this.locale !== 'ru') {
-          const stringifyCompareTranslate = portal.translates.find(
-            (el) => el.locale === this.locale
-          );
+        if (ruTranslateId) {
+          this.translateCommentsService
+            .getCommentsByTranslateId(ruTranslateId)
+            .subscribe((res) => {
+              this.comments = res;
+              this.recordComments = {};
+              this.comments.forEach((el) => {
+                this.recordComments[el.key] = el.comment;
+              });
 
-          if (stringifyCompareTranslate)
-            this.compareTranslate = JSON.parse(
-              stringifyCompareTranslate.translates
-            );
+              if (!portal) {
+                this.router.navigateByUrl('');
+                return;
+              }
+              this.portal = portal;
+
+              const stringifyRuTranslate = portal.translates.find(
+                (el) => el.locale === 'ru'
+              );
+
+              if (stringifyRuTranslate)
+                this.ruTranslate = JSON.parse(stringifyRuTranslate.translates);
+
+              if (this.locale !== 'ru') {
+                const stringifyCompareTranslate = portal.translates.find(
+                  (el) => el.locale === this.locale
+                );
+
+                if (stringifyCompareTranslate)
+                  this.compareTranslate = JSON.parse(
+                    stringifyCompareTranslate.translates
+                  );
+              }
+
+              setTimeout(() => this.cdr.markForCheck());
+              this.isLoading = false;
+            });
         }
-
-        setTimeout(() => this.cdr.markForCheck());
-        this.isLoading = false;
       });
   }
 
@@ -226,7 +256,6 @@ export class TranslatesComponent implements OnInit {
 
     request.subscribe({
       next: (res) => {
-        console.log(res);
         this.alertService
           .open('Success edited!', {
             status: TuiNotification.Success,
@@ -322,4 +351,6 @@ export class TranslatesComponent implements OnInit {
         },
       });
   }
+
+  ngOnDestroy() {}
 }
